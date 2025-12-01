@@ -14,7 +14,9 @@ app.use(cors({
 
 const Employee = mongoose.model('Employee', employeeSchema, 'Emp_Details');
 
-mongoose.connect('mongodb+srv://aarti_wamane:Aarti2204@cluster0.ubalotp.mongodb.net/Employee_Info?retryWrites=true&w=majority&appName=Cluster0')
+const mongoURI = process.env.MONGODB_URI;
+
+mongoose.connect(mongoURI)
 .then(() => console.log("Mongodb Connected.."))
 .catch((err)=> console.log("Connection error",err))
 
