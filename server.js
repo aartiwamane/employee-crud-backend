@@ -2,7 +2,7 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const Employee = require("./employeeSchema");
+const employeeSchema = require("./employeeSchema");
 
 const app = express();
 
