@@ -1,17 +1,23 @@
 
-// server.js
-const express = require('express')
-const mongoose = require('mongoose')
-const cors = require('cors')
-const employeeSchema = require('./employeeSchema')
+const express = require("express");
+const cors = require("cors");
+const mongoose = require("mongoose");
+const Employee = require("./employeeSchema");
+
 const app = express();
 
-// app.use(cors());
-app.use(express.json());
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type"]
+}));
+app.use(express.json());  
+app.use(express.urlencoded({ extended: true }));
 
 app.use(cors({
-  origin: '*',
-   methods: "GET,POST,PUT,DELETE",
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type"]
 }));
 
 const Employee = mongoose.model('Employee', employeeSchema, 'Emp_Details');
@@ -23,7 +29,7 @@ mongoose.connect(mongoURI)
 .catch((err)=> console.log("Connection error",err))
 
 // GET all employees
-app.get('/Employee', async (req, res) => {
+app.get('/employee', async (req, res) => {
     try {
     const employees = await Employee.find();
     res.json(employees);
@@ -33,7 +39,7 @@ app.get('/Employee', async (req, res) => {
 });
 
 // POST a new employee
-app.post('/Employee', async (req, res) => { 
+app.post('/employee', async (req, res) => { 
   try {
     const newEmployee = new Employee(req.body);
     await newEmployee.save();
@@ -43,7 +49,7 @@ app.post('/Employee', async (req, res) => {
   }
 });
 // DELETE Employee by ID
-app.delete('/Employee/:id', async (req, res) => {
+app.delete('/employee/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const deletedEmployee = await Employee.findByIdAndDelete(id);
@@ -56,15 +62,29 @@ app.delete('/Employee/:id', async (req, res) => {
   }
 });
 
-app.put('/employees/:id', async (req, res) => {
-  try {
-    const updatedEmp = await Employee.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!updatedEmp) return res.status(404).json({ message: 'Employee not found' });
-    res.json(updatedEmp);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+app.put("/employee/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const update = {
+            name: req.body.name,
+            position: req.body.position,
+            department: req.body.department
+        };
+
+        const updatedEmp = await Employee.findByIdAndUpdate(id, update, {
+            new: true,
+            runValidators: true
+        });
+
+        if (!updatedEmp) return res.status(404).json({ message: "Employee not found" });
+
+        res.json(updatedEmp);
+    } catch (err) {
+        console.error("Update Error:", err);
+        res.status(500).json({ error: err.message });
+    }
 });
+
 
 // Sample route
 app.get('/', (req, res) => {
