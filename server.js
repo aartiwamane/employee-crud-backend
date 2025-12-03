@@ -20,8 +20,7 @@ app.use(cors({
   allowedHeaders: ["Content-Type"]
 }));
 
-const Employee = mongoose.model('Employee', employeeSchema, 'Emp_Details');
-
+const Employee = mongoose.models.Employee || mongoose.model('Employee', employeeSchema, 'Emp_Details');
 const mongoURI = process.env.MONGODB_URI;
 
 mongoose.connect(mongoURI)
